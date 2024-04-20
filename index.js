@@ -1,32 +1,4 @@
 const https = require('https');
-const TelegramBot = require('node-telegram-bot-api');
-const fs = require('fs');
-
-const bot = new TelegramBot('6908585502:AAGA7Qv-aU9o1RfsBGTeTDxSTyA9JsuUzpc', { polling: true });
-
-// ত্রুটি বিবরণ সহ চ্যাট আইডিতে একটি অবহিততা প্রেরণ করুন
-const CHAT_ID = '5197344486';
-
-bot.onText(/\/start/, (msg) => {
-  const chatId = msg.chat.id;
-  const message = `
-  বট তৈরি হয়েছে!
-  ফাইল লিঙ্ক শেয়ার করুন এবং দেখুন কী হয়!
-  `;
-  bot.sendMessage(chatId, message, { parse_mode: 'HTML' });
-});
-
-bot.on('message', (msg) => {
-  const chatId = msg.chat.id;
-  const fileUrl = msg.text;
-
-  downloadFile(fileUrl, (fileName) => {
-    if (!fileName) {
-      bot.sendMessage(chatId, 'দুঃখিত, ফাইলটি ডাউনলোড করা সম্ভব হয়নি। অনুগ্রহ করে একটি বৈধ ফাইল লিঙ্ক পরীক্ষা করুন।');
-      return;
-    }
-
-    const fileExtension = fileName.split('.').pop();
     const caption = `ফাইলটি ডাউনলোড করা হয়েছে\n\nMADE WITH @GAJARBOTOL`;
     
     switch (fileExtension) {
