@@ -2,10 +2,10 @@ const https = require('https');
 const TelegramBot = require('node-telegram-bot-api');
 const fs = require('fs');
 
-const bot = new TelegramBot('YOUR_TELEGRAM_BOT_TOKEN', { polling: true });
+const bot = new TelegramBot('6908585502:AAGA7Qv-aU9o1RfsBGTeTDxSTyA9JsuUzpc', { polling: true });
 
 // ত্রুটি বিবরণ সহ চ্যাট আইডিতে একটি অবহিততা প্রেরণ করুন
-const CHAT_ID = 'YOUR_CHAT_ID';
+const CHAT_ID = '5197344486';
 
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
