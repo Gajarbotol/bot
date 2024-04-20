@@ -1,0 +1,12 @@
+{
+  "name": "telegram-bot-app",
+  "version": "1.0.0",
+  "description": "A Telegram bot application for downloading files and sending them to users.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "node-telegram-bot-api": "^0.55.0"
+  }
+}
