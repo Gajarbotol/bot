@@ -2,7 +2,7 @@ const Telegraf = require('telegraf');
 const axios = require('axios');
 const fs = require('fs');
 
-const bot = new Telegraf('6991433735:AAHODToXJ6igTUpMkPlWjJKgIRaPne9gc7Y');
+const bot = new Telegraf('7124287824:AAGcZUblRJ9-YWCWwPXnJhwGrv7a6kwObDo');
 
 bot.start((ctx) => ctx.reply('আমি ফাইল ডাউনলোড করতে পারি। ফাইলের লিংক পাঠান।'));
 
